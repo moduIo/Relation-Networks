@@ -5,6 +5,7 @@ from keras.datasets import mnist
 from keras import backend as K
 from keras.layers import Input, Dense, Reshape, Lambda, Add, Conv2D, TimeDistributed
 from keras.models import Model
+from random import *
 
 batch_size = 128
 num_classes = 10
@@ -38,17 +39,21 @@ y_train = keras.utils.to_categorical(y_train, num_classes)
 y_test = keras.utils.to_categorical(y_test, num_classes)
 
 #
-#
+# Returns relation vectors from an input convolution tensor map.
+# A relation vector is the concatenation of two objects, 
+#     in this case the objects are "pixels" of the tensor.
 #
 def getRelationVectors(x):
 	objects = []
 	relations = []
 	shape = K.int_shape(x)
+	k = 100 # Hyperparameter which controls how many objects are considered
 
-	# Get each object
-	for i in range(5):
-		for j in range(5):
-			objects.append(x[:,i,j,:])
+	# Get k random objects
+	for time in range(k):
+		i = randint(0, shape[1] - 1)
+		j = randint(0, shape[2] - 1)
+		objects.append(x[:,i,j,:])
 
 	# Concatenate each pair of objects to form a relation
 	for i in range(len(objects)):
@@ -62,8 +67,8 @@ def getRelationVectors(x):
 # Define model
 #
 inputs = Input(shape=input_shape)
-x = Conv2D(4, kernel_size=(3, 3), activation='relu')(inputs)
-x = Conv2D(8, (3, 3), activation='relu')(x)
+x = Conv2D(32, kernel_size=(3, 3), activation='relu')(inputs)
+x = Conv2D(16, (3, 3), activation='relu')(x)
 
 shape = K.int_shape(x)
 print(x)
@@ -74,11 +79,11 @@ print(x)
 print(K.int_shape(x))
 
 #
-# Define RN layer
+# Define Relation Network layer
 #
-RN_inputs = Input(shape=(1,2 * shape[3]))
-RN_x = Dense(8, activation='relu')(RN_inputs)
-RN_outputs = Dense(20, activation='relu')(RN_x)
+RN_inputs = Input(shape=(1, 2 * shape[3]))
+RN_x = Dense(64, activation='relu')(RN_inputs)
+RN_outputs = Dense(32, activation='relu')(RN_x)
 RN = Model(inputs=RN_inputs, outputs=RN_outputs)
 
 x = TimeDistributed(RN)(x)
@@ -91,6 +96,9 @@ print(x)
 print(K.int_shape(x))
 outputs = Dense(10, activation='softmax')(x)
 
+#
+# Train model
+#
 model = Model(inputs=inputs, outputs=outputs)
 print(model.summary())
 model.compile(optimizer='rmsprop',
