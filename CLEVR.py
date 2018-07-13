@@ -75,7 +75,6 @@ x = Conv2D(24, kernel_size=(3, 3), strides=2, activation='relu')(inputs)
 x = Conv2D(24, (3, 3), strides=2, activation='relu')(x)
 x = Conv2D(24, (3, 3), strides=2, activation='relu')(x)
 x = Conv2D(24, (3, 3), strides=2, activation='relu')(x)
-x = MaxPooling2D(pool_size=(2, 2))(x)
 shape = K.int_shape(x)
 
 #
@@ -85,6 +84,7 @@ RN_inputs = Input(shape=(1, 2 * shape[3]))
 RN_x = Dense(256, activation='relu')(RN_inputs)
 RN_x = Dense(256, activation='relu')(RN_x)
 RN_x = Dense(256, activation='relu')(RN_x)
+RN_x = Dropout(.5)(RN_x)
 RN_outputs = Dense(256, activation='relu')(RN_x)
 RN = Model(inputs=RN_inputs, outputs=RN_outputs)
 
