@@ -1,3 +1,6 @@
+#
+# First attempt at implementing Relation Networks.
+#
 import keras
 from keras import backend as K
 from keras.layers import Input, Dense, Reshape, Lambda, Add, TimeDistributed
