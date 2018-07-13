@@ -1,26 +1,30 @@
 #
-# Implementation of Relation Networks using MNIST.
+# Implementation of Relation Networks using CLEVR.
 # https://arxiv.org/pdf/1706.01427.pdf
 #
 from __future__ import print_function
 import keras
 import numpy as np
-from keras.datasets import mnist
 from keras import backend as K
 from keras.layers import Input, Dense, Reshape, Lambda, Conv2D, TimeDistributed, MaxPooling2D
 from keras.models import Model
 from random import *
 
 #
+# Retrieves and processes CLEVR dataset
+#
+def load_data():
+	datapath = ""
+
+#
 # Environment Parameters
 #
-batch_size = 128
+batch_size = 64
 num_classes = 10
-epochs = 12
-img_rows, img_cols = 28, 28  # input image dimensions
+epochs = 10
 
-# Load & Preprocess MNIST
-(x_train, y_train), (x_test, y_test) = mnist.load_data()
+# Load & Preprocess CLEVR
+(x_train, y_train), (x_test, y_test) = load_data()
 
 if K.image_data_format() == 'channels_first':
     x_train = x_train.reshape(x_train.shape[0], 1, img_rows, img_cols)
@@ -64,38 +68,49 @@ def getRelationVectors(x):
 	return K.permute_dimensions(K.stack([r for r in relations], axis=0), [1, 0, 2])
 
 #
-# Define Model
+# Define CNN Model
 #
 inputs = Input(shape=input_shape)
-x = Conv2D(128, kernel_size=(3, 3), activation='relu')(inputs)
-x = Conv2D(64, (3, 3), activation='relu')(x)
+x = Conv2D(24, kernel_size=(3, 3), strides=2, activation='relu')(inputs)
+x = Conv2D(24, (3, 3), strides=2, activation='relu')(x)
+x = Conv2D(24, (3, 3), strides=2, activation='relu')(x)
+x = Conv2D(24, (3, 3), strides=2, activation='relu')(x)
 x = MaxPooling2D(pool_size=(2, 2))(x)
 shape = K.int_shape(x)
 
 #
-# Define Relation Network layer
+# Define Relation Network module
 #
 RN_inputs = Input(shape=(1, 2 * shape[3]))
-RN_x = Dense(64, activation='relu')(RN_inputs)
-RN_outputs = Dense(64, activation='relu')(RN_x)
+RN_x = Dense(256, activation='relu')(RN_inputs)
+RN_x = Dense(256, activation='relu')(RN_x)
+RN_x = Dense(256, activation='relu')(RN_x)
+RN_outputs = Dense(256, activation='relu')(RN_x)
 RN = Model(inputs=RN_inputs, outputs=RN_outputs)
 
 #
 # Implements g_theta.
-# Use TimeDistributed layer to apply the same RN module
-#     on all rows of the relation list.
 #
-relations = Lambda(getRelationVectors)(x)
-g = TimeDistributed(RN)(relations)
-g = Lambda(lambda x: K.sum(x, axis=1))(g)
+relations = Lambda(getRelationVectors)(x)  # Get tensor [batch, relation_ID, relation_vectors]
+g = TimeDistributed(RN)(relations)         # Use TimeDistributed to apply RN on each r in relations.
+g = Lambda(lambda x: K.sum(x, axis=1))(g)  # Sum over relation_ID
 
-f = Dense(64, activation='relu')(g)
-outputs = Dense(10, activation='softmax')(f)
+#
+# Define f_phi.
+#
+f = Dense(256, activation='relu')(g)
+f = Dropout(.5)(f)
+f = Dense(256, activation='relu')(f)
+f = Dropout(.5)(f)
+f = Dense(29, activation='relu')(f)
+outputs = Dense(num_classes, activation='softmax')(f)
 
+#
 # Train model
+#
 model = Model(inputs=inputs, outputs=outputs)
 print(model.summary())
-model.compile(optimizer='rmsprop',
+model.compile(optimizer='adam',
               loss='categorical_crossentropy',
               metrics=['accuracy'])
 model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs)
