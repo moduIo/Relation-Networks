@@ -47,11 +47,11 @@ def getRelationVectors(x):
 #
 # Environment Parameters
 #
-batch_size = 128
+batch_size = 64
 num_classes = 10
 epochs = 12
 img_rows, img_cols = 28, 28  # input image dimensions
-target_size = (128, 128)
+target_height, target_width = 128, 128
 
 #
 # Load & Preprocess MNIST
@@ -83,11 +83,11 @@ datagen.fit(x_train)
 # Define Model
 #
 inputs = Input(shape=input_shape)
-x = Lambda(lambda x: tf.image.resize_images(x, target_size))(inputs)
+x = Lambda(lambda x: tf.image.resize_image_with_crop_or_pad(x, target_height, target_width))(inputs)
 x = Conv2D(24, kernel_size=(3, 3), strides=2, activation='relu')(x)
-x = Conv2D(24, (3, 3), strides=2, activation='relu')(x)
-x = Conv2D(24, (3, 3), strides=2, activation='relu')(x)
-x = Conv2D(24, (3, 3), strides=2, activation='relu')(x)
+x = Conv2D(24, kernel_size=(3, 3), strides=2, activation='relu')(x)
+x = Conv2D(24, kernel_size=(3, 3), strides=2, activation='relu')(x)
+x = Conv2D(24, kernel_size=(3, 3), strides=2, activation='relu')(x)
 shape = K.int_shape(x)
 
 #
@@ -124,11 +124,9 @@ outputs = Dense(num_classes, activation='softmax')(f)
 model = Model(inputs=inputs, outputs=outputs)
 print(model.summary())
 
-opt = Adam(lr=.00025)
-model.compile(optimizer=opt,
+#opt = Adam(lr=.00025)
+model.compile(optimizer=Adam(),
               loss='categorical_crossentropy',
               metrics=['accuracy'])
 
-model.fit_generator(datagen.flow(x_train, y_train, batch_size=batch_size), 
-	                steps_per_epoch=len(x_train) / batch_size, 
-	                epochs=epochs)
+model.fit_generator(datagen.flow(x_train, y_train, batch_size=batch_size), epochs=epochs)
