@@ -48,13 +48,12 @@ def getRelationVectors(x):
 	relations = []
 	shape = K.int_shape(x)
 	k = 25     # Hyperparameter which controls how many objects are considered
-	width = 2  # Width of tensor "pixel"
 
 	# Get k random objects
 	for time in range(k):
-		i = randint(width, shape[1] - 1 - width)
-		j = randint(width, shape[2] - 1 - width)
-		objects.append(x[:, i - width:i + width, j - width:j + width, :])
+		i = randint(0, shape[1] - 1)
+		j = randint(0, shape[2] - 1)
+		objects.append(x[:, i, j, :])
 
 	# Concatenate each pair of objects to form a relation vector
 	for i in range(len(objects)):
