@@ -11,12 +11,6 @@ from keras.models import Model
 from random import *
 
 #
-# Retrieves and processes CLEVR dataset
-#
-def load_data():
-	datapath = ""
-
-#
 # Environment Parameters
 #
 batch_size = 64
