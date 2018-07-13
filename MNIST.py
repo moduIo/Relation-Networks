@@ -37,20 +37,21 @@ def getRelationVectors(x):
 	objects = []
 	relations = []
 	shape = K.int_shape(x)
-	k = 25 # Hyperparameter which controls how many objects are considered
+	k = 25     # Hyperparameter which controls how many objects are considered
+	width = 2  # Width of tensor "pixel"
 
 	# Get k random objects
 	for time in range(k):
-		i = randint(0, shape[1] - 1)
-		j = randint(0, shape[2] - 1)
-		objects.append(x[:,i,j,:])
+		i = randint(width, shape[1] - 1 - width)
+		j = randint(width, shape[2] - 1 - width)
+		objects.append(x[:, i - width:i + width, j - width:j + width, :])
 
-	# Concatenate each pair of objects to form a relation
+	# Concatenate each pair of objects to form a relation vector
 	for i in range(len(objects)):
 		for j in range(i, len(objects)):
 			relations.append(K.concatenate([objects[i], objects[j]], axis=1))
 
-	# Restack objects into tensor [batch, relation_ID, relation_vectors]
+	# Restack objects into Keras tensor [batch, relation_ID, relation_vectors]
 	return K.permute_dimensions(K.stack([r for r in relations], axis=0), [1, 0, 2])
 
 #
@@ -74,6 +75,7 @@ RN = Model(inputs=RN_inputs, outputs=RN_outputs)
 # Implements g_theta.
 # Use TimeDistributed layer to apply the same RN module
 #     on all rows of the relation list.
+#
 relations = Lambda(getRelationVectors)(x)
 g = TimeDistributed(RN)(relations)
 g = Lambda(lambda x: K.sum(x, axis=1))(g)
