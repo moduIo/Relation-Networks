@@ -3,7 +3,7 @@ import keras
 import numpy as np
 from keras.datasets import mnist
 from keras import backend as K
-from keras.layers import Input, Dense, Reshape, Lambda, Add, Conv2D, TimeDistributed
+from keras.layers import Input, Dense, Reshape, Lambda, Add, Conv2D, TimeDistributed, MaxPooling2D
 from keras.models import Model
 from random import *
 
@@ -47,7 +47,7 @@ def getRelationVectors(x):
 	objects = []
 	relations = []
 	shape = K.int_shape(x)
-	k = 100 # Hyperparameter which controls how many objects are considered
+	k = 25 # Hyperparameter which controls how many objects are considered
 
 	# Get k random objects
 	for time in range(k):
@@ -64,19 +64,13 @@ def getRelationVectors(x):
 	return K.permute_dimensions(K.stack([r for r in relations], axis=0), [1, 0, 2])
 
 #
-# Define model
+# Define CNN
 #
 inputs = Input(shape=input_shape)
 x = Conv2D(32, kernel_size=(3, 3), activation='relu')(inputs)
-x = Conv2D(16, (3, 3), activation='relu')(x)
-
+x = Conv2D(32, (3, 3), activation='relu')(x)
+x = MaxPooling2D(pool_size=(2, 2))(x)
 shape = K.int_shape(x)
-print(x)
-print(shape)
-
-x = Lambda(getRelationVectors)(x)
-print(x)
-print(K.int_shape(x))
 
 #
 # Define Relation Network layer
@@ -86,15 +80,17 @@ RN_x = Dense(64, activation='relu')(RN_inputs)
 RN_outputs = Dense(32, activation='relu')(RN_x)
 RN = Model(inputs=RN_inputs, outputs=RN_outputs)
 
-x = TimeDistributed(RN)(x)
+#
+# Implements g_theta.
+# Use TimeDistributed layer to apply the same RN module
+#     on all rows of the relation list.
+relations = Lambda(getRelationVectors)(x)
+g = TimeDistributed(RN)(relations)
+g = Lambda(lambda x: K.sum(x, axis=1))(g)
 
-print(x)
-print(K.int_shape(x))
-x = Lambda(lambda x: K.sum(x, axis=1))(x)
+f = Dense(32, activation='relu')(g)
 
-print(x)
-print(K.int_shape(x))
-outputs = Dense(10, activation='softmax')(x)
+outputs = Dense(10, activation='softmax')(f)
 
 #
 # Train model
