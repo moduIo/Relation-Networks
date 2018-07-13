@@ -1,4 +1,4 @@
-# Relation-Networks
+# Relation Networks
 Keras implementation of Relation Networks.
 
 Relation Networks are a neural network module which are specialized to learn relations, just as convolutional kernels are specialized to process images. RNs are useful for Visual Question Answering, where they hold state-of-the-art results.
