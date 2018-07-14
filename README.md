@@ -20,9 +20,9 @@ Images are processed using a CNN, while the questions are processed using an LST
 
 ## Experiments
 ### 10000 Questions, 1000 Images
-* Epochs: 10 
-* Loss: 1.5208
-* Accuracy: 0.3411
+* Epochs: 10 / Loss: 1.5208 / Accuracy: 0.3411
+* Epochs: 20 / Loss: 1.1206 / Accuracy: 0.4130
+
 
 # Misc
 ## MNIST.py
