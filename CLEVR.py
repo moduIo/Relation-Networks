@@ -11,6 +11,33 @@ from keras import backend as K
 from keras.layers import Input, Dense, Dropout, Reshape, Lambda, Embedding, LSTM, Conv2D, MaxPooling2D, TimeDistributed, RepeatVector, Concatenate
 from keras.models import Model
 from random import *
+import json
+import os.path
+
+#
+# Loads CLEVR dataset.
+#
+def load_data(split, n):
+	path = '../../Datasets/CLEVR_v1.0'
+	questions_path = path + '/questions/CLEVR_' + split + '_questions.json'
+	subset_questions_path = path + '/questions/CLEVR_' + split + '_questions_' + str(n) + '.json'
+	images_path = path + '/images'
+
+	# Attempt to load saved JSON subset of the questions
+	if os.path.exists(subset_questions_path):
+		with open(subset_questions_path) as f:
+			training_data = json.load(f)
+	else:
+		with open(questions_path) as f:
+			training_data = json.load(f)
+
+		with open(subset_questions_path, 'w') as outfile:
+			json.dump(training_data['questions'][0:n], outfile)
+
+		print('JSON subset saved to file...')
+
+	print('Data loaded...')
+	exit()
 
 #
 # Preprocesses the input image by cropping and random rotations.
@@ -67,7 +94,8 @@ num_classes = 10
 #
 # Load & Preprocess CLEVR
 #
-(x_train, y_train), (x_test, y_test) = mnist.load_data()
+(x_train, y_train) = load_data('train', 2000)
+exit()
 y_train = keras.utils.to_categorical(y_train, num_classes) # convert class vectors to binary class matrices
 y_test = keras.utils.to_categorical(y_test, num_classes)
 
@@ -81,6 +109,13 @@ else:
     image_input_shape = (img_rows, img_cols, 1)
 
 #
+# Define LSTM
+#
+text_inputs = Input(shape=text_input_shape)
+text_x = Embedding(max_text_features, 128)(text_inputs)
+text_x = LSTM(128)(text_x)
+
+#
 # Define CNN
 #
 image_inputs = Input(shape=image_input_shape)
@@ -90,13 +125,6 @@ image_x = Conv2D(24, kernel_size=(3, 3), strides=2, activation='relu')(image_x)
 image_x = Conv2D(24, kernel_size=(3, 3), strides=2, activation='relu')(image_x)
 image_x = Conv2D(24, kernel_size=(3, 3), strides=2, activation='relu')(image_x)
 shape = K.int_shape(image_x)
-
-#
-# Define LSTM
-#
-text_inputs = Input(shape=text_input_shape)
-text_x = Embedding(max_text_features, 128)(text_inputs)
-text_x = LSTM(128)(text_x)
 
 #
 # Define Relation Network layer
@@ -110,7 +138,7 @@ RN_outputs = Dense(256, activation='relu')(RN_x)
 RN = Model(inputs=RN_inputs, outputs=RN_outputs)
 
 #
-# Implements g_theta.
+# Implements g_theta
 #
 relations = Lambda(get_relation_vectors)(image_x)           # Get tensor [batch, relation_ID, relation_vectors]
 question = RepeatVector(K.int_shape(relations)[1])(text_x)  # Shape question vector to same size as relations
@@ -119,7 +147,7 @@ g = TimeDistributed(RN)(relations)                          # TimeDistributed ap
 g = Lambda(lambda x: K.sum(x, axis=1))(g)                   # Sum over relation_ID
 
 #
-# Define f_phi.
+# Define f_phi
 #
 f = Dense(256, activation='relu')(g)
 f = Dropout(.5)(f)
