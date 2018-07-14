@@ -22,8 +22,9 @@ Images are processed using a CNN, while the questions are processed using an LST
 ### 10000 Questions - 1000 Images
 Epoch 10 - loss: 1.5208 - acc: 0.3411
 
-# MNIST.py
-Implementation of Relation Networks on MNIST.
+# Misc
+## MNIST.py
+Implementation of Relation Networks on MNIST demonstrating a simpler RN architecture.
 
-# RN.py
+## RN.py
 First working prototype.
