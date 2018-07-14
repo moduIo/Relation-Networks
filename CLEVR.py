@@ -11,7 +11,7 @@ import numpy as np
 import keras
 from keras.optimizers import Adam
 from keras import backend as K
-from keras.layers import Input, Dense, Dropout, Reshape, Lambda, Embedding, LSTM, Conv2D, MaxPooling2D, TimeDistributed, RepeatVector, Concatenate
+from keras.layers import Input, Dense, Dropout, BatchNormalization, Reshape, Lambda, Embedding, LSTM, Conv2D, MaxPooling2D, TimeDistributed, RepeatVector, Concatenate
 from keras.models import Model
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing import sequence
@@ -157,9 +157,13 @@ text_x = LSTM(128)(text_x)
 image_inputs = Input(shape=image_input_shape, name='image_input')
 image_x = Lambda(process_image)(image_inputs)
 image_x = Conv2D(24, kernel_size=(3, 3), strides=2, activation='relu')(image_x)
+image_x = BatchNormalization()(image_x)
 image_x = Conv2D(24, kernel_size=(3, 3), strides=2, activation='relu')(image_x)
+image_x = BatchNormalization()(image_x)
 image_x = Conv2D(24, kernel_size=(3, 3), strides=2, activation='relu')(image_x)
+image_x = BatchNormalization()(image_x)
 image_x = Conv2D(24, kernel_size=(3, 3), strides=2, activation='relu')(image_x)
+image_x = BatchNormalization()(image_x)
 shape = K.int_shape(image_x)
 
 #
