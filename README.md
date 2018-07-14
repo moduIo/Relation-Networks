@@ -19,9 +19,10 @@ Images are processed using a CNN, while the questions are processed using an LST
 ![Alt text](CLEVR.png?raw=true "Title")
 
 ## Experiments
-### 10000 Questions, 1000 Images
+### 10000 Questions / 1000 Images
 * Epochs: 10 / Loss: 1.5208 / Accuracy: 0.3411
 * Epochs: 20 / Loss: 1.1206 / Accuracy: 0.4130
+* Epochs: 30 / Loss: 1.0256 / Accuracy: 0.4275
 
 
 # Misc
