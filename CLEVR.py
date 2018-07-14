@@ -3,22 +3,12 @@
 # https://arxiv.org/pdf/1706.01427.pdf
 #
 from __future__ import print_function
-import keras
-import numpy as np
-from keras import backend as K
-from keras.layers import Input, Dense, Reshape, Lambda, Conv2D, TimeDistributed, MaxPooling2D
-from keras.models import Model
-from random import *
-
-from __future__ import print_function
 import tensorflow as tf
 import numpy as np
 import keras
-from keras.datasets import mnist
 from keras.optimizers import Adam
 from keras import backend as K
-from keras.preprocessing.image import ImageDataGenerator
-from keras.layers import Input, Dense, Dropout, Reshape, Lambda, Conv2D, MaxPooling2D, TimeDistributed
+from keras.layers import Input, Dense, Dropout, Reshape, Lambda, Embedding, LSTM, Conv2D, MaxPooling2D, TimeDistributed, RepeatVector, Concatenate
 from keras.models import Model
 from random import *
 
@@ -75,7 +65,7 @@ img_rows, img_cols = 28, 28  # input image dimensions
 num_classes = 10
 
 #
-# Load & Preprocess MNIST
+# Load & Preprocess CLEVR
 #
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 y_train = keras.utils.to_categorical(y_train, num_classes) # convert class vectors to binary class matrices
@@ -94,17 +84,19 @@ else:
 # Define CNN
 #
 image_inputs = Input(shape=image_input_shape)
-x = Lambda(process_image)(image_inputs)
-x = Conv2D(24, kernel_size=(3, 3), strides=2, activation='relu')(x)
-x = Conv2D(24, kernel_size=(3, 3), strides=2, activation='relu')(x)
-x = Conv2D(24, kernel_size=(3, 3), strides=2, activation='relu')(x)
-x = Conv2D(24, kernel_size=(3, 3), strides=2, activation='relu')(x)
-shape = K.int_shape(x)
+image_x = Lambda(process_image)(image_inputs)
+image_x = Conv2D(24, kernel_size=(3, 3), strides=2, activation='relu')(image_x)
+image_x = Conv2D(24, kernel_size=(3, 3), strides=2, activation='relu')(image_x)
+image_x = Conv2D(24, kernel_size=(3, 3), strides=2, activation='relu')(image_x)
+image_x = Conv2D(24, kernel_size=(3, 3), strides=2, activation='relu')(image_x)
+shape = K.int_shape(image_x)
 
 #
 # Define LSTM
 #
 text_inputs = Input(shape=text_input_shape)
+text_x = Embedding(max_text_features, 128)(text_inputs)
+text_x = LSTM(128)(text_x)
 
 #
 # Define Relation Network layer
@@ -120,9 +112,11 @@ RN = Model(inputs=RN_inputs, outputs=RN_outputs)
 #
 # Implements g_theta.
 #
-relations = Lambda(get_relation_vectors)(x)  # Get tensor [batch, relation_ID, relation_vectors]
-g = TimeDistributed(RN)(relations)         # Use TimeDistributed to apply RN on each r in relations.
-g = Lambda(lambda x: K.sum(x, axis=1))(g)  # Sum over relation_ID
+relations = Lambda(get_relation_vectors)(image_x)           # Get tensor [batch, relation_ID, relation_vectors]
+question = RepeatVector(K.int_shape(relations)[1])(text_x)  # Shape question vector to same size as relations
+relations = Concatenate(axis=1)([relations, question])      # Merge tensors [batch, relation_ID, relation_vectors, question_vector]
+g = TimeDistributed(RN)(relations)                          # TimeDistributed applies RN to relation vectors.
+g = Lambda(lambda x: K.sum(x, axis=1))(g)                   # Sum over relation_ID
 
 #
 # Define f_phi.
