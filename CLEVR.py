@@ -10,6 +10,8 @@ from keras.optimizers import Adam
 from keras import backend as K
 from keras.layers import Input, Dense, Dropout, Reshape, Lambda, Embedding, LSTM, Conv2D, MaxPooling2D, TimeDistributed, RepeatVector, Concatenate
 from keras.models import Model
+from keras.preprocessing.text import Tokenizer
+from keras.preprocessing import sequence
 from random import *
 import json
 import os.path
@@ -17,26 +19,53 @@ import os.path
 #
 # Loads CLEVR dataset.
 #
-def load_data(split, n):
+def load_data(split, n, vocab_size):
 	path = '../../Datasets/CLEVR_v1.0'
 	questions_path = path + '/questions/CLEVR_' + split + '_questions.json'
 	subset_questions_path = path + '/questions/CLEVR_' + split + '_questions_' + str(n) + '.json'
 	images_path = path + '/images'
+	x_text = []
+	x_image = []
+	y = []
+	labels = {}
+	num_labels = 0
 
 	# Attempt to load saved JSON subset of the questions
 	if os.path.exists(subset_questions_path):
 		with open(subset_questions_path) as f:
-			training_data = json.load(f)
+			data = json.load(f)
 	else:
 		with open(questions_path) as f:
-			training_data = json.load(f)
+			data = json.load(f)
 
 		with open(subset_questions_path, 'w') as outfile:
-			json.dump(training_data['questions'][0:n], outfile)
+			json.dump(data['questions'][0:n], outfile)
 
 		print('JSON subset saved to file...')
 
 	print('Data loaded...')
+
+	# Process data
+	for q in data[0:n]:
+		# Create an index for each answer
+		if not q['answer'] in labels:
+			labels[q['answer']] = num_labels
+			num_labels += 1
+
+		x_text.append(q['question'])
+		y.append(labels[q['answer']])
+
+	# Convert question corpus into sequential encoding for LSTM
+	t = Tokenizer(num_words=vocab_size)
+	t.fit_on_texts(x_text)
+	sequences = t.texts_to_sequences(x_text)
+	x_text = sequence.pad_sequences(sequences, maxlen=vocab_size)
+
+	# Convert labels to categorical labels
+	y = keras.utils.to_categorical(y, num_labels + 1)
+
+	print(x_text.shape)
+	print(y.shape)
 	exit()
 
 #
@@ -89,15 +118,12 @@ batch_size = 64
 epochs = 12
 learning_rate = .00025
 img_rows, img_cols = 28, 28  # input image dimensions
-num_classes = 10
+vocab_size = 1000
 
 #
 # Load & Preprocess CLEVR
 #
-(x_train, y_train) = load_data('train', 2000)
-exit()
-y_train = keras.utils.to_categorical(y_train, num_classes) # convert class vectors to binary class matrices
-y_test = keras.utils.to_categorical(y_test, num_classes)
+(x_train, y_train), num_classes = load_data('train', 2000, vocab_size)
 
 if K.image_data_format() == 'channels_first':
     x_train = x_train.reshape(x_train.shape[0], 1, img_rows, img_cols)
