@@ -74,7 +74,7 @@ def load_data(split, n, vocab_size):
 	x_image = np.array(x_image)
 
 	# Convert labels to categorical labels
-	y = keras.utils.to_categorical(y, num_labels + 1)
+	y = keras.utils.to_categorical(y, num_labels)
 
 	print('Text: ', x_text.shape)
 	print('Image: ', x_image.shape)
@@ -132,13 +132,14 @@ batch_size = 64
 epochs = 12
 learning_rate = .00025
 img_rows, img_cols = 320, 480
-image_input_shape = (img_rows, img_cols, 1)
-vocab_size = 1000
+image_input_shape = (img_rows, img_cols, 3)
+vocab_size = 2048
+samples = 10000
 
 #
 # Load & Preprocess CLEVR
 #
-(x_train, y_train), num_labels = load_data('train', 2000, vocab_size)
+(x_train, y_train), num_labels = load_data('train', samples, vocab_size)
 
 #
 # Define LSTM
@@ -194,7 +195,7 @@ outputs = Dense(num_labels, activation='softmax')(f)
 model = Model(inputs=[text_inputs, image_inputs], outputs=outputs)
 print(model.summary())
 
-model.compile(optimizer=Adam(lr=learning_rate),
+model.compile(optimizer=keras.optimizers.Nadam(),
               loss='categorical_crossentropy',
               metrics=['accuracy'])
 
