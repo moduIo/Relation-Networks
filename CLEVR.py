@@ -3,6 +3,8 @@
 # https://arxiv.org/pdf/1706.01427.pdf
 #
 from __future__ import print_function
+import json
+import os.path
 import random as ra
 import tensorflow as tf
 import numpy as np
@@ -13,8 +15,6 @@ from keras.layers import Input, Dense, Dropout, Reshape, Lambda, Embedding, LSTM
 from keras.models import Model
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing import sequence
-import json
-import os.path
 from scipy import ndimage, misc
 
 #
@@ -93,7 +93,7 @@ def process_image(x):
 	rotation_range = .05  # In radians
 	degs = ra.uniform(-rotation_range, rotation_range)
 
-	x = tf.image.resize_images(x, (target_height, target_width))
+	x = tf.image.resize_images(x, (target_height, target_width), method=tf.image.ResizeMethod.AREA)
 	x = tf.contrib.image.rotate(x, degs)
 
 	return x
@@ -131,13 +131,13 @@ def get_relation_vectors(x):
 #
 # Environment Parameters
 #
+samples = 10000
+epochs = 100
 batch_size = 64
-epochs = 12
 learning_rate = .00025
+vocab_size = 1024
 img_rows, img_cols = 320, 480
 image_input_shape = (img_rows, img_cols, 3)
-vocab_size = 512
-samples = 10000
 
 #
 # Load & Preprocess CLEVR
@@ -189,7 +189,6 @@ f = Dense(256, activation='relu')(g)
 f = Dropout(.5)(f)
 f = Dense(256, activation='relu')(f)
 f = Dropout(.5)(f)
-f = Dense(29, activation='relu')(f)
 outputs = Dense(num_labels, activation='softmax')(f)
 
 #
@@ -198,7 +197,7 @@ outputs = Dense(num_labels, activation='softmax')(f)
 model = Model(inputs=[text_inputs, image_inputs], outputs=outputs)
 print(model.summary())
 
-model.compile(optimizer=keras.optimizers.Nadam(),
+model.compile(optimizer=Adam(lr=learning_rate),
               loss='categorical_crossentropy',
               metrics=['accuracy'])
 
