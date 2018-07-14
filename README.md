@@ -6,12 +6,13 @@ Adam Santoro, David Raposo, David G.T. Barrett, Mateusz Malinowski, Razvan Pasca
 https://arxiv.org/pdf/1706.01427.pdf
 
 # CLEVR.py
+![Alt text](VQA.png?raw=true "Title")
+
 Visual Question Answering as in https://arxiv.org/pdf/1706.01427.pdf implemented on the CLEVR dataset (https://cs.stanford.edu/people/jcjohns/clevr/).
 
-![Alt text](VQA.jpg?raw=true "Title")
 Above is an example image which could have the following question: "Q: Are there an equal number of large things and metal spheres?"
 
-The image is processed using a CNN, while the question is processed using an LSTM.  These tensors are then decomposed into objects and fed as input into the RN module.
+Images are processed using a CNN, while the questions are processed using an LSTM.  These tensors are then decomposed into objects and fed as input into the RN module.
 
 # MNIST.py
 Implementation of Relation Networks on MNIST.
