@@ -18,9 +18,11 @@ Above is an example image which could have the following question: "Q: Are there
 Images are processed using a CNN, while the questions are processed using an LSTM.  These tensors are then decomposed into objects and fed as input into the RN module.
 ![Alt text](CLEVR.png?raw=true "Title")
 
-## Accuracy
-### 10000 Questions - 1000 Images
-Epoch 10 - loss: 1.5208 - acc: 0.3411
+## Experiments
+### 10000 Questions, 1000 Images
+Epoch 10 
+Loss: 1.5208
+Accuracy: 0.3411
 
 # Misc
 ## MNIST.py
