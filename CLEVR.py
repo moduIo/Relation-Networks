@@ -90,7 +90,7 @@ def process_image(x):
 	rotation_range = .05  # In radians
 	degs = ra.uniform(-rotation_range, rotation_range)
 
-	x = tf.image.resize_image_with_crop_or_pad(x, target_height, target_width)
+	x = tf.image.resize_images(x, (target_height, target_width))
 	x = tf.contrib.image.rotate(x, degs)
 
 	return x
