@@ -11,8 +11,10 @@ My Keras implementation uses the Functional API to define the network.  One modi
 Visual Question Answering implemented on the CLEVR dataset (https://cs.stanford.edu/people/jcjohns/clevr/).
 
 ![Alt text](VQA.png?raw=true "Title")
+
 Above is an example image which could have the following question: "Q: Are there an equal number of large things and metal spheres?"
 
+## Architecture
 Images are processed using a CNN, while the questions are processed using an LSTM.  These tensors are then decomposed into objects and fed as input into the RN module.
 ![Alt text](CLEVR.png?raw=true "Title")
 
