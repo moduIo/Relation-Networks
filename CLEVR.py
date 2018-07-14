@@ -41,8 +41,10 @@ def load_data(split, n, vocab_size):
 		with open(questions_path) as f:
 			data = json.load(f)
 
+		data = data['questions'][0:n]
+
 		with open(subset_questions_path, 'w') as outfile:
-			json.dump(data['questions'][0:n], outfile)
+			json.dump(data, outfile)
 
 		print('JSON subset saved to file...')
 
@@ -79,6 +81,7 @@ def load_data(split, n, vocab_size):
 	print('Text: ', x_text.shape)
 	print('Image: ', x_image.shape)
 	print('Labels: ', y.shape)
+	print('Data processed.')
 
 	return ([x_text, x_image], y), num_labels
 
@@ -133,7 +136,7 @@ epochs = 12
 learning_rate = .00025
 img_rows, img_cols = 320, 480
 image_input_shape = (img_rows, img_cols, 3)
-vocab_size = 2048
+vocab_size = 512
 samples = 10000
 
 #
