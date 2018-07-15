@@ -18,19 +18,21 @@ from keras.preprocessing import sequence
 from scipy import ndimage, misc
 
 #
-# Loads CLEVR dataset.
+# Loads & Preprocesses CLEVR dataset.
 #
 def load_data(split, n, vocab_size):
+	# Dataset paths
 	path = '../../Datasets/CLEVR_v1.0'
 	questions_path = path + '/questions/CLEVR_' + split + '_questions.json'
 	subset_questions_path = path + '/questions/CLEVR_' + split + '_questions_' + str(n) + '.json'
 	images_path = path + '/images/' + split + '/'
-	x_text = []
-	x_image = []
-	y = []
-	labels = {}
-	images = {}
-	num_labels = 0
+	
+	x_text = []     # List of questions
+	x_image = []    # List of images
+	y = []          # List of answers
+	num_labels = 0  # Current number of labels, used to create index mapping
+	labels = {}     # Dictionary mapping of ints to labels
+	images = {}     # Dictionary of images, to minimize number of imread ops
 
 	# Attempt to load saved JSON subset of the questions
 	print('Loading data...')
