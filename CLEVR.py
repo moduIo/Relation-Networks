@@ -49,8 +49,6 @@ def load_data(split, n, vocab_size):
 
 		print('JSON subset saved to file...')
 
-	print('Data loaded.')
-
 	# Store data
 	print('Storing data...')
 
@@ -68,8 +66,6 @@ def load_data(split, n, vocab_size):
 		x_image.append(images[q['image_filename']])
 		y.append(labels[q['answer']])
 
-	print('Data stored.')
-
 	# Convert question corpus into sequential encoding for LSTM
 	print('Processing data...')
 	t = Tokenizer(num_words=vocab_size)
@@ -86,7 +82,6 @@ def load_data(split, n, vocab_size):
 	print('Text: ', x_text.shape)
 	print('Image: ', x_image.shape)
 	print('Labels: ', y.shape)
-	print('Data processed.')
 
 	return ([x_text, x_image], y), num_labels
 
