@@ -76,7 +76,7 @@ def load_data(split, n, vocab_size, tokenizer=None):
 		tokenizer = Tokenizer(num_words=vocab_size)
 
 	tokenizer.fit_on_texts(x_text)
-	sequences = t.texts_to_sequences(x_text)
+	sequences = tokenizer.texts_to_sequences(x_text)
 	x_text = sequence.pad_sequences(sequences, maxlen=vocab_size)
 
 	# Convert x_image to np array
