@@ -149,7 +149,6 @@ image_input_shape = (img_rows, img_cols, 3)
 # Load & Preprocess CLEVR
 #
 (x_train, y_train), num_labels, tokenizer = load_data('train', samples, vocab_size)
-(x_train, y_train), num_labels, tokenizer = load_data('train', samples, vocab_size)
 
 #
 # Define LSTM
