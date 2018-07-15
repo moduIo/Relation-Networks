@@ -29,6 +29,7 @@ def load_data(split, n, vocab_size):
 	x_image = []
 	y = []
 	labels = {}
+	images = {}
 	num_labels = 0
 
 	# Attempt to load saved JSON subset of the questions
@@ -59,8 +60,12 @@ def load_data(split, n, vocab_size):
 			labels[q['answer']] = num_labels
 			num_labels += 1
 
+		# Create an index for each image
+		if not q['image_filename'] in images:
+			images[q['image_filename']] = misc.imread(images_path + q['image_filename'], mode='RGB')
+
 		x_text.append(q['question'])
-		x_image.append(misc.imread(images_path + q['image_filename'], mode='RGB'))
+		x_image.append(images[q['image_filename']])
 		y.append(labels[q['answer']])
 
 	print('Data stored.')
