@@ -1,9 +1,9 @@
 # Relation Networks
-Relation Networks are a neural network module which are specialized to learn relations, just as convolutional kernels are specialized to process images. RNs are useful for Visual Question Answering, where they hold state-of-the-art results.
-
 "A simple neural network module for relational reasoning"
 Adam Santoro, David Raposo, David G.T. Barrett, Mateusz Malinowski, Razvan Pascanu, Peter Battaglia, Timothy Lillicrap
 https://arxiv.org/pdf/1706.01427.pdf
+
+Relation Networks are a neural network module which are specialized to learn relations, just as convolutional kernels are specialized to process images. RNs are useful for Visual Question Answering, where they hold state-of-the-art results.
 
 My Keras implementation uses the Functional API to define the network.  One generalization to RNs is the use of a selection kernel which picks k distinct random objects from the processed image tensor instead of all n^2 objects.  This allows for a much smaller number of relation vectors when k << n^2.
 
