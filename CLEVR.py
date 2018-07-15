@@ -15,12 +15,13 @@ from keras.layers import Input, Dense, Dropout, BatchNormalization, Reshape, Lam
 from keras.models import Model
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing import sequence
+from keras.callbacks import ModelCheckpoint, TensorBoard
 from scipy import ndimage, misc
 
 #
 # Loads & Preprocesses CLEVR dataset.
 #
-def load_data(split, n, vocab_size):
+def load_data(split, n, vocab_size, tokenizer=None):
 	# Dataset paths
 	path = '../../Datasets/CLEVR_v1.0'
 	questions_path = path + '/questions/CLEVR_' + split + '_questions.json'
@@ -70,8 +71,11 @@ def load_data(split, n, vocab_size):
 
 	# Convert question corpus into sequential encoding for LSTM
 	print('Processing data...')
-	t = Tokenizer(num_words=vocab_size)
-	t.fit_on_texts(x_text)
+
+	if not tokenizer:
+		tokenizer = Tokenizer(num_words=vocab_size)
+
+	tokenizer.fit_on_texts(x_text)
 	sequences = t.texts_to_sequences(x_text)
 	x_text = sequence.pad_sequences(sequences, maxlen=vocab_size)
 
@@ -85,7 +89,7 @@ def load_data(split, n, vocab_size):
 	print('Image: ', x_image.shape)
 	print('Labels: ', y.shape)
 
-	return ([x_text, x_image], y), num_labels
+	return ([x_text, x_image], y), num_labels, tokenizer
 
 #
 # Preprocesses the input image by cropping and random rotations.
@@ -137,14 +141,15 @@ samples = 10000
 epochs = 100
 batch_size = 64
 learning_rate = .00025
-vocab_size = 1024
+vocab_size = 2048
 img_rows, img_cols = 320, 480
 image_input_shape = (img_rows, img_cols, 3)
 
 #
 # Load & Preprocess CLEVR
 #
-(x_train, y_train), num_labels = load_data('train', samples, vocab_size)
+(x_train, y_train), num_labels, tokenizer = load_data('train', samples, vocab_size)
+(x_train, y_train), num_labels, tokenizer = load_data('train', samples, vocab_size)
 
 #
 # Define LSTM
@@ -207,4 +212,9 @@ model.compile(optimizer=Adam(lr=learning_rate),
               loss='categorical_crossentropy',
               metrics=['accuracy'])
 
-model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs)
+model.fit(x_train, y_train, 
+	      batch_size=batch_size, 
+	      epochs=epochs, 
+	      shuffle=True,
+          callbacks=[ModelCheckpoint('models', period=10),
+                     TensorBoard(log_dir='logs' + str(n))])
