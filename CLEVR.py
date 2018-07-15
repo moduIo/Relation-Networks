@@ -216,4 +216,4 @@ model.fit(x_train, y_train,
 	      epochs=epochs, 
 	      shuffle=True,
           callbacks=[ModelCheckpoint('models', period=10),
-                     TensorBoard(log_dir='logs' + str(n))])
+                     TensorBoard(log_dir='logs' + str(samples))])
