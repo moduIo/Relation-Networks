@@ -137,8 +137,8 @@ def get_relation_vectors(x):
 #
 # Environment Parameters
 #
-samples = 10000
-epochs = 100
+samples = 60000
+epochs = 500
 batch_size = 64
 learning_rate = .00025
 vocab_size = 2048
