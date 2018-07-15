@@ -27,6 +27,9 @@ Images are processed using a CNN, while the questions are processed using an LST
 * Epochs: 50 / Loss: 0.9394 / Accuracy: 0.4617
 * Epochs: 60 / Loss: 0.8873 / Accuracy: 0.4901
 * Epochs: 70 / Loss: 0.8435 / Accuracy: 0.5132
+* Epochs: 80 / Loss: 0.7954 / Accuracy: 0.5422
+* Epochs: 90 / Loss: 0.7585 / Accuracy: 0.5562
+* Epochs: 100 / Loss: 0.7262 / Accuracy: 0.5714
 
 # Misc
 ## MNIST.py
