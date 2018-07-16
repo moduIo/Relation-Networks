@@ -138,7 +138,7 @@ def get_relation_vectors(x):
 # Environment Parameters
 #
 samples = 60000
-epochs = 500
+epochs = 100
 batch_size = 64
 learning_rate = .00025
 vocab_size = 2048
@@ -215,5 +215,5 @@ model.fit(x_train, y_train,
 	      batch_size=batch_size, 
 	      epochs=epochs, 
 	      shuffle=True,
-          callbacks=[ModelCheckpoint('models', period=10),
-                     TensorBoard(log_dir='logs' + str(samples))])
+          callbacks=[ModelCheckpoint('models/' + str(samples), period=1),
+                     TensorBoard(log_dir='logs')])
