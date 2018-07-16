@@ -141,7 +141,7 @@ samples = 60000
 epochs = 100
 batch_size = 64
 learning_rate = .00025
-vocab_size = 2048
+vocab_size = 1024
 img_rows, img_cols = 320, 480
 image_input_shape = (img_rows, img_cols, 3)
 
@@ -215,5 +215,5 @@ model.fit(x_train, y_train,
 	      batch_size=batch_size, 
 	      epochs=epochs, 
 	      shuffle=True,
-          callbacks=[ModelCheckpoint('models/' + str(samples), period=1),
-                     TensorBoard(log_dir='logs')])
+          callbacks=[ModelCheckpoint('models/' + str(samples) + '.hdf5', period=1),
+                     TensorBoard(log_dir='logs/' + str(samples))])
