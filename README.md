@@ -20,9 +20,12 @@ Images are processed using a CNN, while the questions are processed using an LST
 
 ## Experiments
 ### 60000 Questions / 6000 Images
-![Alt text](images/acc.png?raw=true "Accuracy")
+Training a RN using 10% of the train data results in ~70% accuracy after 100 epochs, which shows that using a random entity selection kernel still results in compelling results after a short training period.
+#### Accuracy Plot
+![Alt text](images/acc.jpg?raw=true "Accuracy")
 
-![Alt text](images/loss.png?raw=true "Loss")
+#### Loss Plot
+![Alt text](images/loss.jpg?raw=true "Loss")
 
 # Misc
 ## MNIST.py
