@@ -19,17 +19,10 @@ Images are processed using a CNN, while the questions are processed using an LST
 ![Alt text](images/CLEVR.png?raw=true "Title")
 
 ## Experiments
-### 10000 Questions / 1000 Images
-* Epochs: 10 / Loss: 1.5208 / Accuracy: 0.3411
-* Epochs: 20 / Loss: 1.1206 / Accuracy: 0.4130
-* Epochs: 30 / Loss: 1.0256 / Accuracy: 0.4275
-* Epochs: 40 / Loss: 0.9957 / Accuracy: 0.4411
-* Epochs: 50 / Loss: 0.9394 / Accuracy: 0.4617
-* Epochs: 60 / Loss: 0.8873 / Accuracy: 0.4901
-* Epochs: 70 / Loss: 0.8435 / Accuracy: 0.5132
-* Epochs: 80 / Loss: 0.7954 / Accuracy: 0.5422
-* Epochs: 90 / Loss: 0.7585 / Accuracy: 0.5562
-* Epochs: 100 / Loss: 0.7262 / Accuracy: 0.5714
+### 60000 Questions / 6000 Images
+![Alt text](images/acc.png?raw=true "Accuracy")
+
+![Alt text](images/loss.png?raw=true "Loss")
 
 # Misc
 ## MNIST.py
