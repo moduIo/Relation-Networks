@@ -20,9 +20,9 @@ Images are processed using a CNN, while the questions are processed using an LST
 
 ## Experiments
 ### 60000 Questions / 6000 Images
-![Alt text](images/acc.png?raw=true "Accuracy")
+![Alt text](images/acc.jpg?raw=true "Accuracy")
 
-![Alt text](images/loss.png?raw=true "Loss")
+![Alt text](images/loss.jpg?raw=true "Loss")
 
 # Misc
 ## MNIST.py
