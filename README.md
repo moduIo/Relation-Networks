@@ -20,7 +20,7 @@ Images are processed using a CNN, while the questions are processed using an LST
 
 ## Experiments
 ### 60000 Questions / 6000 Images
-Training a RN using 10% of the train data results in ~70% accuracy after 100 epochs, which shows that using a random entity selection kernel still results in compelling results after a short training period.  For this experiment I used k=25, which is roughly half of the 49 entities used in the original paper.  Note that there is a quadratic number of binary relations w.r.t. the number of entities.
+Training a RN using 10% of the train data results in ~70% accuracy after 100 epochs, which shows that using a random entity selection kernel still results in compelling results after a short training period.  For this experiment I used k=25, which is roughly half of the 49 entities used in the original paper.
 
 #### Accuracy Plot
 ![Alt text](images/acc.jpg?raw=true "Accuracy")
