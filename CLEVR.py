@@ -21,7 +21,7 @@ from scipy import ndimage, misc
 #
 # Loads & Preprocesses CLEVR dataset.
 #
-def load_data(split, n, vocab_size, tokenizer=None):
+def load_data(split, n, vocab_size, sequence_length, tokenizer=None):
 	# Dataset paths
 	path = '../../Datasets/CLEVR_v1.0'
 	questions_path = path + '/questions/CLEVR_' + split + '_questions.json'
@@ -52,8 +52,8 @@ def load_data(split, n, vocab_size, tokenizer=None):
 
 		print('JSON subset saved to file...')
 
-	# Store data
-	print('Storing data...')
+	# Store image data and labels in dictionaries
+	print('Storing image data...')
 
 	for q in data[0:n]:
 		# Create an index for each answer
@@ -70,14 +70,14 @@ def load_data(split, n, vocab_size, tokenizer=None):
 		y.append(labels[q['answer']])
 
 	# Convert question corpus into sequential encoding for LSTM
-	print('Processing data...')
+	print('Processing text data...')
 
 	if not tokenizer:
 		tokenizer = Tokenizer(num_words=vocab_size)
 
 	tokenizer.fit_on_texts(x_text)
 	sequences = tokenizer.texts_to_sequences(x_text)
-	x_text = sequence.pad_sequences(sequences, maxlen=vocab_size)
+	x_text = sequence.pad_sequences(sequences, maxlen=sequence_length)
 
 	# Convert x_image to np array
 	x_image = np.array(x_image)
@@ -142,18 +142,19 @@ epochs = 100
 batch_size = 64
 learning_rate = .00025
 vocab_size = 1024
+sequence_length = 64
 img_rows, img_cols = 320, 480
 image_input_shape = (img_rows, img_cols, 3)
 
 #
 # Load & Preprocess CLEVR
 #
-(x_train, y_train), num_labels, tokenizer = load_data('train', samples, vocab_size)
+(x_train, y_train), num_labels, tokenizer = load_data('train', samples, vocab_size, sequence_length)
 
 #
 # Define LSTM
 #
-text_inputs = Input(shape=(vocab_size,), name='text_input')
+text_inputs = Input(shape=(sequence_length,), name='text_input')
 text_x = Embedding(vocab_size, 128)(text_inputs)
 text_x = LSTM(128)(text_x)
 
